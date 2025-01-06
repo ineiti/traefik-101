@@ -1,0 +1,18 @@
+services:  
+  whoami:
+    image: traefik/whoami
+    networks:
+      # The docker container needs to connect to the traefik network.
+      - traefik
+    labels:
+      # Enable traefik to do its magic router and service setup.
+      - "traefik.enable=true"
+      # Give the domain name for the Host(`fqdn`) rule.
+      - "fqdn=whoami"
+
+networks:
+  traefik:
+    external:
+      # This is because docker compose renamed the `traefik` network by
+      # prepending the directory name.
+      name: traefik_traefik

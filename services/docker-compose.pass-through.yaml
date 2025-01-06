@@ -1,0 +1,22 @@
+services:  
+  whoami:
+    image: traefik/whoami
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "fqdn=whoami"
+      - "traefik.http.routers.web-whoami-traefik.entrypoints=web"      
+      # Only route the `/api` path directly using http.
+      - "traefik.http.routers.web-whoami-traefik.rule=(Host(`whoami`) && Path(`/api`))"
+      # For all other requests to this domain, create a redirect to https
+      - "traefik.http.routers.webredirect-whoami-traefik.entrypoints=web"
+      - "traefik.http.routers.webredirect-whoami-traefik.middlewares=http-redirect@file"
+      # Finally add the websecure router - as at least one router is defined
+      # manually, traefik will not add the websecure router on its own.
+      - "traefik.http.routers.websecure-whoami-traefik.entrypoints=websecure"
+
+networks:
+  traefik:
+    external:
+      name: traefik_traefik

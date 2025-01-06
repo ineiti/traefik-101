@@ -1,0 +1,14 @@
+services:  
+  whoami:
+    image: traefik/whoami
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      # Define all needed hosts with an 'or'. No need to add the `fqdn` label.
+      - "traefik.http.routers.whoami-traefik.rule=(Host(`whoami1`) || Host(`whoami2`))"
+
+networks:
+  traefik:
+    external:
+      name: traefik_traefik 

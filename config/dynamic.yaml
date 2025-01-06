@@ -1,0 +1,39 @@
+http:
+  routers:
+    http-router:
+      # Connect the router to all requests coming in through `web`.
+      entryPoints:
+        - web
+      # Catch all requests to any hostname.
+      rule: "HostRegexp(`.*`)"
+      # Apply the 'http-redirect' middleware.
+      middlewares:
+        - http-redirect
+      # Every router needs to be connected to a service - here the service is
+      # never reached.
+      service: noop@internal
+      # Set the priority to '1', so that other docker containers can overwrite
+      # this router with a higher priority.
+      priority: 1
+
+  middlewares:
+    http-redirect:
+      # This middleware redirects all requests to https, and informs the
+      # client's browser that this is permanent.
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+tls:
+  options:
+    default:
+      # Allow TLS >= 1.2
+      minVersion: "VersionTLS12"
+      cipherSuites:
+          # Secure cipher suites for TLS=1.2
+        - "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+        - "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256"
+        - "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+        - "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+        - "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256"

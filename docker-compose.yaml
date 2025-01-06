@@ -1,0 +1,28 @@
+services:
+  traefik:
+    image: "traefik:v3"
+    ports:
+      - "80:80"
+      - "443:443"
+      # This is only used for the dashboard
+      - "8080:8080" 
+    volumes:
+      # Mount the whole directory with all configuration files in it. This is
+      # preferable than mounting each configuration file individually.
+      - "./config:/etc/traefik:ro"
+      # Here traefik will store the acme.json file with the private keys for
+      # the certificates.
+      - "./letsencrypt:/letsencrypt"
+      # Traefik needs access to the docker socket to detect new
+      # docker containers.
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      # Use a separate docker-network for all internet traffic. This is needed
+      # if some of the docker-containers use their own network, too, for example
+      # a webserver communicating with its database, but wanting to be available
+      # over the internet.
+      - traefik
+    restart: unless-stopped
+
+networks:
+  traefik:

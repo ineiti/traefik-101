@@ -1,0 +1,63 @@
+entryPoints:
+  web:
+    address: ":80"
+
+  websecure:
+    address: ":443"
+    # The docker-provider will only create routers for this entrypoint, and
+    # not for the `web` entrypoint.
+    asDefault: true
+    http:
+      tls:
+        domains:
+        # Here you can add domains which do not appear in any Host(``) rule,
+        # but for which you still need certificates. This is useful for some
+        # mailserver configuration.
+
+providers:
+  docker:
+    # Connect traefik to docker and let it help writing routers and
+    # services. But only if the docker-container has
+    # - "traefik.enable=true"
+    # in its labels.
+    exposedByDefault: false
+    # Per default use the network created in docker-compose.yaml. This 
+    # supposes that the docker-compose.yaml file is in a directory called
+    # `traefik`, because docker-compose prepends the current directory name
+    # to all service and network names.
+    network: traefik_traefik
+    # For every docker container with traefik enabled, create a router with
+    # the following rule. The 'fqdn' is set in the `labels` definition of
+    # the docker container, e.g.,
+    # - "fqdn=subdomain.example.com"
+    defaultRule: "Host(`{{ index .Labels \"fqdn\"}}`)"
+  file:
+    # Include our dynamic file as source for additional routers and other
+    # configuration.
+    filename: "/etc/traefik/dynamic.yaml"
+    watch: true
+
+# This can be commented out once things run stable.
+log:
+  level: "TRACE"
+  format: "common"
+
+# Displays the requests served by traefik. Comment it out once things
+# run good.
+accesslog: {}
+
+# Show the dashboard at SERVER_IP:8080 to verify the routers and services are
+# correctly set up.
+# COMMENT OUT FOR A PRODUCTION SYSTEM!
+api:
+  insecure: true
+  dashboard: true
+
+# Get automatic certificates from letsencrypt and store them on the
+# server. Replace <your email> with your current email.
+certificatesResolvers:
+  leresolver:
+    acme:
+      tlsChallenge: {}
+      email: <your email>
+      storage: /letsencrypt/acme.json
