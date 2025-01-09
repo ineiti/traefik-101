@@ -2,9 +2,9 @@
 
 Many of us are running traefik. If you're like me, you copy/pasted some `docker-compose.yaml` from a webpage, added some `labels` to your other `docker-compose.yaml` files, and things went up and running. Sooner or later you want to have something more fancy, and you need to understand what you actually did. RTFM and all that, you look at https://doc.traefik.io, and ... it's a mess. Honestly, I'm lost in this documentation.
 
-It talks about static and dynamic configuration, without really explaining which options are part of which. Where does `http` come from, and what are the options? Some parts like `providers` are explained twice, and you'll have to figure out which one you need. Other things like the automagic traefik is doing with docker is not really explained. In the end I started with a `docker-compose.yaml` on my laptop, added some `traefik.yaml` and `dynamic.yaml`, and copy/pasted things around until it made sense.
+In this post I'll walk you through the differences between static and dynamic configurations, I'll show what other configurations than `http` exist, which `providers` you need, and how `entrypoints`, `routers`, and `services` play together if you mix manual and automatic configurations.
 
-This post is the result of my experiments with traefik, which I applied now to my server, where they run happily ever after. Or so I hope :)
+This post is the result of many hours of playing with a `docker-compose.yaml` and some configuration files on my laptop, which I applied now to my server. I start with the files needed for the traefik configuration, and then go through different configurations for the services.
 
 ## Setup
 
